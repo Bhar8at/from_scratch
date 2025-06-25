@@ -23,21 +23,21 @@ class Convolutional(Layer):
 		self.output = np.copy(self.biases)
 		for i in range(self.depth):
 			for j in range(self.input_depth):
-				self.output[i] += signal.correlate2d(self.input[i], self.kernels[i,j], "valid")
+				self.output[i] += signal.correlate2d(self.input[j], self.kernels[i,j], "valid")
 		return self.output
 
 
 	def backward(self, output_gradient, learning_rate):
-		kernel_gradient = np.zeroes(self.kernels_shape)
-		input_gradient = np.zeroes(self.input_shape)
+		kernel_gradient = np.zeros(self.kernels_shape)
+		input_gradient = np.zeros(self.input_shape)
 
 		for i in range(self.depth):
 			for j in range(self.input_depth):
-				kernel_gradient  = signal.correlate2d(self.input[j], output_gradient[i], "valid")
-				input_gradient = signal.convolve2d(output_gradient[i], self.kernels[i, j], "full")
+				kernel_gradient[i,j]  = signal.correlate2d(self.input[j], output_gradient[i], "valid")
+				input_gradient[j] += signal.convolve2d(output_gradient[i], self.kernels[i, j], "full")
 
-		self.kernels += learning_rate * kernel_gradient
-		self.biases += learning_rate * output_gradient
+		self.kernels -= learning_rate * kernel_gradient
+		self.biases -= learning_rate * output_gradient
 
 		return input_gradient
 		

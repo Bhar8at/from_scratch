@@ -10,11 +10,7 @@ def train(network, loss, loss_prime, x_train, y_train, epoch = 1000, learning_ra
         error = 0
         for x,y in zip(x_train, y_train):
             # forward pass
-            print("predicting ", x)
-            print(x.shape)
-            print("Tjhats al")
             output = predict(network, x)
-
             # calculating the error
             error += loss(y,output)
 
